@@ -28,9 +28,13 @@ Stop scrolling through endless flat lists. Organize your sources into nested tre
 
 ## 🚀 New in v17.5: The Storage Overhaul
 We have moved to a **Local-First Architecture**.
-- **Unlimited Storage:** You can now build massive folder trees without hitting Chrome's tiny sync limits.
+- **Unlimited Storage:** You can now build massive folder trees without hitting Chrome's tiny sync limits. Note this only applies to extension related items and note notes/sources/generated items
 - **Instant Performance:** Saves happen instantly with no network latency.
 - **Bigger Brain:** Deep Search index is now **5MB** (up from 2MB), allowing you to index 2x more note content.
+- **Source List Item Selection:** Source list item selection and control.
+- **Zen/Focus Mode:** Hide the center AI chat Area.
+- **Move generated Items to folders:** Store generated items in custom tree view folders.
+- **Task Manager:** Added Task List to Source panel with priority, sorting by priority, due date.
 
 ## Features
 
@@ -46,7 +50,7 @@ We have moved to a **Local-First Architecture**.
 - **Nested Folders** — Create deep structures for both Sources and Studio Notes.
 - **Pinning** — Keep critical contracts or specs pinned to the top.
 - **Color Coding** — Assign colors to folders for visual organization.
-- **Drag & Drop** — Easily move items between folders.
+-**Generated Artifacts** - Move generatd artifacts to custom folders
 
 ### 🔍 Deep Search
 - **Content Indexing** — Search the *actual text* inside your notes, not just the titles.
@@ -94,17 +98,39 @@ Because v17.5 prioritizes speed and unlimited capacity (not related to notes or 
 
 ## Screenshots
 
-**Source Dashboard**
+**Source Dashboard:**
 *The new Task List, Folder Tree, and Bulk Select Checkboxes.*
-<img width="252" height="170" alt="Source Dashboard with Tasks" src="https://github.com/user-attachments/assets/d3b36a39-abf6-4b6c-a81d-2688fbca07e4" />
 
-**Folder Controls**
+<img width="460" height="734" alt="image" src="https://github.com/user-attachments/assets/30ce080c-42b4-4571-968d-4527bf1a49f8" />
+
+
+**Folder Controls:**
 *Manage colors, renaming, and nested structures.*
-<img width="432" height="129" alt="Folder Controls" src="https://github.com/user-attachments/assets/b6c79d4b-90f3-42b2-a3ff-d267413aca4f" />
 
-**Zen Mode & Focus**
+<img width="462" height="505" alt="image" src="https://github.com/user-attachments/assets/44c339ca-402f-41d7-81f0-4425435e042b" />
+
+**Zen/Focus Mode:**
 *Clean interface with chat hidden.*
-<img width="471" height="121" alt="Zen Mode" src="https://github.com/user-attachments/assets/26ca3554-402c-4b2b-9635-0fda91cd5a22" />
+
+<img width="1822" height="621" alt="image" src="https://github.com/user-attachments/assets/27ed86d6-3993-4094-86ac-d44fa9a1c434" />
+
+**Source List Item Control:**
+*Bulk and granular control over source items.*
+
+<img width="350" height="359" alt="image" src="https://github.com/user-attachments/assets/f559ca46-89aa-4dae-9103-e6a42ad7b2a9" />
+
+
+**Improved search index:**
+*Count of item's indexed. Note you must open a note to index it.*
+
+<img width="465" height="125" alt="image" src="https://github.com/user-attachments/assets/6e199a79-40bb-4555-ba45-e9789192f8de" />
+
+**Generated Items Moved to Folders:**
+*Generated items can now be moved to folders.*
+
+<img width="418" height="367" alt="image" src="https://github.com/user-attachments/assets/ede649db-4af0-460c-9b5c-af0bd6355bc2" />
+
+
 
 ## Privacy & Security
 
@@ -134,5 +160,6 @@ Found a bug or have a feature request? Open an issue or submit a PR.
 **GPLv3 License**
 
 This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+
 
 *Note: This ensures that any improvements made to this project must be shared back with the community.*
