@@ -1,23 +1,22 @@
 /**
- * NotebookLM Pro Tree - V17.5 (Local Storage Infrastructure)
+ * NotebookLM Pro Tree - V17.6 (Generated Items Support)
  * Author: Benju66
  * NOTE: Version is now read from manifest.json only - single source of truth
  * 
  * V17.5 Changes:
+ * - Added support for generated items (Slides, Infographics, FAQs, etc.) in Studio panel
+ * - Generated items can now be moved to folders like notes
+ * - Items still being generated are automatically skipped until complete
  * - Switched to local-only storage (unlimitedStorage permission)
  * - Automatic migration from sync storage for existing users
  * - Removed 100KB sync storage limitation
  * - Simplified storage architecture for future features (links/tags)
  * - Cleaner codebase with single storage path
- * 
- * V17.4 Changes:
  * - Version now reads from manifest.json (no more manual sync needed)
  * - Added custom styled confirmation modals (replaces native confirm())
  * - Added search index size limit (2MB) with LRU eviction
  * - Added race condition guard for processItems()
  * - Improved memory management for large notebooks
- * 
- * V17.3 Changes:
  * - Added "Select All/Deselect All" button to source panel
  * - Added checkboxes to individual tree items (synced with native state)
  * - Added bulk-select checkboxes to folders
@@ -64,7 +63,7 @@ const DEFAULT_SELECTORS = {
         '.source-list-item'
     ],
     studioRow: [
-        'artifact-library-note',
+        'artifact-library-note, artifact-library-item',
         'mat-card[class*="artifact"]',
         '.studio-note-item',
         '.artifact-item',
@@ -294,7 +293,7 @@ const ICONS = {
     expandAll: '<svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="currentColor"><path d="M480-120 300-300l58-58 122 122 122-122 58 58-180 180ZM358-598l-58-58 180-180 180 180-58 58-122-122-122 122Z"/></svg>',
     collapseAll: '<svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="currentColor"><path d="m356-160-56-56 180-180 180 180-56 56-124-124-124 124Zm124-404L300-744l56-56 124 124 124-124 56 56-180 180Z"/></svg>',
     refresh: '<svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="currentColor"><path d="M480-160q-134 0-227-93t-93-227q0-134 93-227t227-93q69 0 132 28.5T720-690v-110h80v240H560v-80h135q-31-40-74.5-65T540-730q-100 0-170 70t-70 170q0 100 70 170t170 70q77 0 139-44t87-116h84q-28 106-114 173t-196 67Z"/></svg>',
-    focus: '<svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="currentColor"><path d="M260-240q-25 0-42.5-17.5T200-300v-360q0-25 17.5-42.5T260-720h440q25 0 42.5 17.5T760-660v360q0 25-17.5 42.5T700-240H260Zm0-80h440v-360H260v360Zm220-40q42 0 71-29t29-71q0-42-29-71t-71-29q-42 0-71 29t-29 71q0 42 29 71t71 29ZM400-80q-33 0-56.5-23.5T320-160h320v-80h80v80q0 33-23.5 56.5T640-80H400ZM120-400v-80h80v80H120Zm0-160v-80h80v80H120Zm0 320v-80h80v80H120Z"/></svg>',
+    focus: '<svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="currentColor"><path d="M272-160q-30 0-51-21t-21-51q0-21 12-39.5t32-26.5l156-62v-90q-54 63-125.5 96.5T120-320v-80q68 0 123.5-28T344-508l54-64q12-14 28-21t34-7h40q18 0 34 7t28 21l54 64q45 52 100.5 80T840-400v80q-83 0-154.5-33.5T560-450v90l156 62q20 8 32 26.5t12 39.5q0 30-21 51t-51 21H400v-20q0-26 17-43t43-17h120q9 0 14.5-5.5T600-260q0-9-5.5-14.5T580-280H460q-42 0-71 29t-29 71v20h-88Zm208-480q-33 0-56.5-23.5T400-720q0-33 23.5-56.5T480-800q33 0 56.5 23.5T560-720q0 33-23.5 56.5T480-640Z"/></svg>',
     check: '<svg xmlns="http://www.w3.org/2000/svg" height="12px" viewBox="0 -960 960 960" width="12px" fill="white"><path d="M382-240 154-468l57-57 171 171 367-367 57 57-424 424Z"/></svg>',
     sort: '<svg xmlns="http://www.w3.org/2000/svg" height="14px" viewBox="0 0 24 24" width="14px" fill="currentColor"><path d="M3 18h6v-2H3v2zM3 6v2h18V6H3zm0 7h12v-2H3v2z"/></svg>',
     trash: '<svg xmlns="http://www.w3.org/2000/svg" height="14px" viewBox="0 -960 960 960" width="14px" fill="currentColor"><path d="M280-120q-33 0-56.5-23.5T200-200v-520h-40v-80h200v-40h240v40h200v80h-40v520q0 33-23.5 56.5T680-120H280Zm400-600H280v520h400v-520ZM360-280h80v-360h-80v360Zm160 0h80v-360h-80v360ZM280-720v520-520Z"/></svg>',
@@ -304,6 +303,8 @@ const ICONS = {
     calendar: '<svg xmlns="http://www.w3.org/2000/svg" height="14px" viewBox="0 -960 960 960" width="14px" fill="currentColor"><path d="M200-80q-33 0-56.5-23.5T120-160v-560q0-33 23.5-56.5T200-800h40v-80h80v80h320v-80h80v80h40q33 0 56.5 23.5T840-720v560q0 33-23.5 56.5T760-80H200Zm0-80h560v-400H200v400Zm0-480h560v-80H200v80Zm0 0v-80 80Z"/></svg>',
     chevron: '<svg xmlns="http://www.w3.org/2000/svg" height="18px" viewBox="0 0 24 24" width="18px" fill="currentColor"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg>',
     warning: '<svg xmlns="http://www.w3.org/2000/svg" height="16px" viewBox="0 -960 960 960" width="16px" fill="currentColor"><path d="m40-120 440-760 440 760H40Zm138-80h604L480-720 178-200Zm302-40q17 0 28.5-11.5T520-280q0-17-11.5-28.5T480-320q-17 0-28.5 11.5T440-280q0 17 11.5 28.5T480-240Zm-40-120h80v-200h-80v200Zm40-100Z"/></svg>',
+    
+    deleteForever: '<svg xmlns="http://www.w3.org/2000/svg" height="18px" viewBox="0 -960 960 960" width="18px" fill="currentColor"><path d="M280-120q-33 0-56.5-23.5T200-200v-520h-40v-80h200v-40h240v40h200v80h-40v520q0 33-23.5 56.5T680-120H280Zm400-600H280v520h400v-520ZM376-280l104-104 104 104 56-56-104-104 104-104-56-56-104 104-104-104-56 56 104 104-104 104 56 56ZM280-720v520-520Z"/></svg>',
     
     // NEW ICONS FOR V17.3
     selectAll: '<svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="currentColor"><path d="M260-160q-42 0-71-29t-29-71v-440q0-42 29-71t71-29h440q42 0 71 29t29 71v440q0 42-29 71t-71 29H260Zm0-80h440v-440H260v440Zm178-106 208-208-56-57-152 152-82-82-56 57 138 138ZM260-700v440-440Z"/></svg>',
@@ -699,7 +700,7 @@ function renderTasks() {
             completedGroup.innerHTML = `
                 <div class="plugin-completed-header">
                     <div style="display:flex; align-items:center; gap:4px;"><span class="${arrowClass}">${ICONS.chevron}</span> Completed (${doneItems.length})</div>
-                    <div class="plugin-header-btn clear-done-btn" title="Clear All Completed">${ICONS.trash}</div>
+                    <div class="plugin-header-btn clear-done-btn" title="Clear All Completed">${ICONS.deleteForever}</div>
                 </div>
                 <div class="plugin-completed-body" style="display:${isOpen ? 'block' : 'none'}"></div>
             `;
@@ -1068,10 +1069,10 @@ function exportFolders() {
         a.click();
         document.body.removeChild(a);
         URL.revokeObjectURL(url);
-        showToast("âœ“ Config exported");
+        showToast("Ã¢Å“â€œ Config exported");
     } catch (e) {
         console.error('[NotebookLM Tree] Export failed:', e);
-        showToast("âš ï¸ Export failed");
+        showToast("Ã¢Å¡Â Ã¯Â¸Â Export failed");
     }
 }
 
@@ -1680,7 +1681,15 @@ function processItems(context) {
             items = Array.from(cands);
         }
     } else {
-        items = safeQueryAll(document, activeSelectors.studioRow);
+        // Studio panel: explicitly get BOTH notes and generated items
+        const notes = document.querySelectorAll('artifact-library-note');
+        const generatedItems = document.querySelectorAll('artifact-library-item');
+        items = [...notes, ...generatedItems];
+        
+        // Fallback if neither found
+        if (items.length === 0) {
+            items = safeQueryAll(document, activeSelectors.studioRow);
+        }
         if (items.length === 0) {
             items = document.querySelectorAll('mat-card');
         }
@@ -1696,6 +1705,15 @@ function processItems(context) {
     items.forEach(nativeRow => {
         try {
             nativeRow.classList.add('plugin-detected-row');
+            
+            // Skip items that are still being generated (studio panel only)
+            if (context === 'studio') {
+                const itemButton = nativeRow.querySelector('.artifact-item-button');
+                if (itemButton && itemButton.classList.contains('shimmer-yellow')) return;
+                const button = nativeRow.querySelector('button.artifact-button-content');
+                if (button && button.disabled) return;
+            }
+            
             let titleEl = context === 'source' 
                 ? safeQuery(nativeRow, activeSelectors.sourceTitle)
                 : safeQuery(nativeRow, activeSelectors.studioTitle);
@@ -1863,13 +1881,45 @@ function createProxyItem(nativeRow, text, context, isPinnedView) {
             }
         } else {
             iconElement = document.createElement('span');
-            iconElement.innerText = 'ðŸ“„';
+            iconElement.innerText = 'Ã°Å¸â€œâ€ž';
             iconElement.style.marginRight = '8px';
         }
     } else {
-        const span = document.createElement('span');
-        span.innerHTML = `<svg style="color:#8ab4f8;" xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="currentColor"><path d="M320-240h320v-80H320v80Zm0-160h320v-80H320v80ZM240-80q-33 0-56.5-23.5T160-160v-640q0-33 23.5-56.5T240-880h320l240 240v480q0 33-23.5 56.5T720-80H240Zm280-520v-200H240v640h480v-440H520ZM240-800v200-200 640-640Z"></path></svg>`;
-        iconElement = span.firstElementChild;
+        // Studio panel: Find and clone the artifact icon
+        const artifactIcon = nativeRow.querySelector('.artifact-icon');
+        
+        if (artifactIcon) {
+            const iconName = (artifactIcon.textContent || artifactIcon.innerText || '').trim();
+            if (iconName && iconName !== 'more_vert' && iconName !== 'sync') {
+                let iconColor = 'var(--plugin-icon-color)';
+                try {
+                    const style = window.getComputedStyle(artifactIcon);
+                    if (style.color) iconColor = style.color;
+                } catch (e) { }
+                
+                iconElement = document.createElement('mat-icon');
+                iconElement.className = artifactIcon.className;
+                iconElement.textContent = iconName;
+                iconElement.setAttribute('aria-hidden', 'true');
+                iconElement.setAttribute('data-mat-icon-type', 'font');
+                iconElement.style.marginRight = '8px';
+                iconElement.style.display = 'inline-flex';
+                iconElement.style.alignItems = 'center';
+                iconElement.style.fontSize = '20px';
+                iconElement.style.width = '20px';
+                iconElement.style.height = '20px';
+                iconElement.style.color = iconColor;
+            } else {
+                iconElement = artifactIcon.cloneNode(true);
+                iconElement.style.marginRight = '8px';
+                iconElement.style.display = 'flex';
+            }
+        } else {
+            // Fallback to generic document icon
+            const span = document.createElement('span');
+            span.innerHTML = `<svg style="color:#8ab4f8;" xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="currentColor"><path d="M320-240h320v-80H320v80Zm0-160h320v-80H320v80ZM240-80q-33 0-56.5-23.5T160-160v-640q0-33 23.5-56.5T240-880h320l240 240v480q0 33-23.5 56.5T720-80H240Zm280-520v-200H240v640h480v-440H520ZM240-800v200-200 640-640Z"></path></svg>`;
+            iconElement = span.firstElementChild;
+        }
     }
 
     const isP = isPinned(context, text);
