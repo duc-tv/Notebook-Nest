@@ -37,7 +37,7 @@ Advanced Task Management: Organize tasks into Custom Sections (collapsible group
 Graceful Stability: A new self-healing engine that disables specific broken features individually instead of crashing the whole extension if Google updates their code.
 
 ## Features
-📋 **Productivity & Workflow**
+**Productivity & Workflow** 📋 
 
 *   **Multi-Window Workflow** — Click the "Pop-out" icon on any note in the Studio panel to open it in a separate window. Perfect for dual-monitor setups.
 
@@ -49,7 +49,7 @@ Graceful Stability: A new self-healing engine that disables specific broken feat
 *   **"Zen Mode"** — Toggle the UI to hide the AI chat and sidebars for a distraction-free reading/writing studio.
 
 
-📂 **Organization**
+ **Organization** 📂
 
 *   **Nested Folders** — Create deep structures for Sources, Notes, and Generated Artifacts (Audio Overviews, FAQs, etc.).
 
@@ -60,7 +60,7 @@ Graceful Stability: A new self-healing engine that disables specific broken feat
 *   **Bulk Select** — Master checkboxes to select/deselect all sources in a folder or the entire notebook instantly.
 
 
-🔍 **Deep Search**
+**Deep Search** 🔍 
 
 *   **Content Indexing** — Search the actual text inside your notes, not just the titles.
 
@@ -69,7 +69,7 @@ Graceful Stability: A new self-healing engine that disables specific broken feat
 *   **Smart Compression** — Uses LZ-String compression to store up to 5MB of search index data locally without impacting performance.
 
 
-🛡️ **Reliability**
+**Reliability** 🛡️ 
 
 *   **Local-First Architecture** — Zero network latency. All data lives on your device.
 
@@ -150,3 +150,4 @@ This program is free software: you can redistribute it and/or modify it under th
 
 
 Note: This ensures that any improvements made to this project must be shared back with the community.
+
