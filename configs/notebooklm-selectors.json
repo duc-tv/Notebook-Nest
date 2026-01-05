@@ -1,0 +1,9 @@
+{
+  "sourceRow": ".single-source-container, [data-source-id], .source-item, div[role=\"listitem\"]:has(mat-checkbox)",
+  "studioRow": "artifact-library-note, artifact-library-item, mat-card[class*=\"artifact\"]",
+  "sourceTitle": ".source-title, [aria-label=\"Source title\"], .source-name",
+  "studioTitle": ".artifact-title, .title, h3, .note-title",
+  "activeNoteTitle": "input[aria-label=\"note title editable\"], .note-header__editable-title, textarea[aria-label=\"Title\"]",
+  "activeNoteBody": ".ql-editor, .ProseMirror, [contenteditable=\"true\"], .note-body",
+  "generatorBox": ".create-artifact-buttons-container, studio-panel .actions-container"
+}
